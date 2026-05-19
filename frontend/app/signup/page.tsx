@@ -22,6 +22,7 @@ export default function SignupPage() {
     try {
       await createMember({ username, userId, userpassword: password });
       clearSession();
+      window.alert("회원가입이 완료되었습니다. 로그인해 주세요.");
       router.replace("/login");
     } catch (err: unknown) {
       const msg =
