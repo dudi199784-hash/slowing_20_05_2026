@@ -1,0 +1,36 @@
+spring:
+  profiles:
+    active: dev
+    include: secret
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 30MB
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+custom:
+  openai:
+    # gpt-image-1 미지원 시 서비스에서 image-model-fallback 으로 재시도
+    image-model: gpt-image-1
+    image-model-fallback: gpt-image-2
+
+logging:
+  level:
+    root: INFO
+    com.example.sksb: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE

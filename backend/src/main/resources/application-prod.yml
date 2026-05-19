@@ -1,0 +1,9 @@
+custom:
+  fileDirPath: /usr/file
+
+# 운영에서는 API 문서 노출 끔 (필요 시 springdoc.swagger-ui.enabled: true 로 임시 허용)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
