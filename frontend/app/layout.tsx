@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
 import AuthPresenceCookieSync from "@/components/auth/AuthPresenceCookieSync";
-import ChatbotWindy from "@/components/ChatbotWindy";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
@@ -44,7 +43,6 @@ export default function RootLayout({
           <main className="w-full flex-1">{children}</main>
           <Footer />
         </div>
-        <ChatbotWindy />
       </body>
     </html>
   );
