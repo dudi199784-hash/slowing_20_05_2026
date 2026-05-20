@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { formatApiError } from "@/app/lib/api/formatApiError";
 import {
+  browseViewCountSessionKey,
   fetchBrowseLogoAsset,
   formatMetricCount,
   logoAssetImageUrl,
@@ -19,44 +20,45 @@ type BrowseDetailClientProps = {
   id: number;
 };
 
-function browseCountSessionKey(id: number): string {
-  return `browse-view-counted-${id}`;
-}
-
 export default function BrowseDetailClient({ id }: BrowseDetailClientProps) {
   const [item, setItem] = useState<LogoAssetItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [likeLoading, setLikeLoading] = useState(false);
+  const loadAbortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    const countKey = browseCountSessionKey(id);
-    const shouldCountView = sessionStorage.getItem(countKey) !== "1";
-    if (shouldCountView) {
-      sessionStorage.setItem(countKey, "1");
-    }
+    loadAbortRef.current?.abort();
+    const ac = new AbortController();
+    loadAbortRef.current = ac;
 
-    let cancelled = false;
+    const countKey = browseViewCountSessionKey(id);
+    const shouldCountView = sessionStorage.getItem(countKey) !== "1";
+
     (async () => {
       setLoading(true);
       setError("");
       try {
         const data = await fetchBrowseLogoAsset(id, {
           countView: shouldCountView,
+          signal: ac.signal,
         });
-        if (!cancelled) setItem(data);
-      } catch (err: unknown) {
-        if (!cancelled) {
-          setError(formatApiError(err, "디자인을 불러오지 못했습니다."));
-          setItem(null);
+        if (ac.signal.aborted) return;
+        if (shouldCountView) {
+          sessionStorage.setItem(countKey, "1");
         }
+        setItem(data);
+      } catch (err: unknown) {
+        if (ac.signal.aborted) return;
+        setError(formatApiError(err, "디자인을 불러오지 못했습니다."));
+        setItem(null);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!ac.signal.aborted) setLoading(false);
       }
     })();
 
     return () => {
-      cancelled = true;
+      ac.abort();
     };
   }, [id]);
 
@@ -68,8 +70,13 @@ export default function BrowseDetailClient({ id }: BrowseDetailClientProps) {
     setLikeLoading(true);
     setError("");
     try {
+      loadAbortRef.current?.abort();
       const updated = await toggleBrowseLike(id);
-      setItem(updated);
+      setItem((prev) => ({
+        ...updated,
+        /** 늦게 끝난 조회 API가 조회수만 덮어쓰지 않도록 — 좋아요는 likeCount만 반영 */
+        viewCount: prev?.viewCount ?? updated.viewCount,
+      }));
     } catch (err: unknown) {
       setError(formatApiError(err, "좋아요 처리에 실패했습니다."));
     } finally {

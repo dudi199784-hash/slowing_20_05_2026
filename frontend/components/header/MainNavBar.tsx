@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import BrandLogoLink from "./BrandLogoLink";
 import Nav from "./Nav";
 
 type MainNavBarProps = {
@@ -41,8 +42,7 @@ export default function MainNavBar({ isHome, isScrolled }: MainNavBarProps) {
           </Link>
         </div>
 
-        <Link
-          href="/"
+        <BrandLogoLink
           className={`${logoSerif} z-10 shrink-0 text-base font-medium tracking-[0.18em] sm:text-lg sm:tracking-[0.24em] md:text-xl md:tracking-[0.28em] lg:absolute lg:left-1/2 lg:-translate-x-1/2 ${
             isTransparentHero
               ? "text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]"
@@ -50,7 +50,7 @@ export default function MainNavBar({ isHome, isScrolled }: MainNavBarProps) {
           }`}
         >
           SLOWIND
-        </Link>
+        </BrandLogoLink>
 
         <div className="flex flex-1 justify-end lg:min-w-[9rem]">
           <Nav variant={isTransparentHero ? "overlay" : "default"} />

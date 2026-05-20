@@ -48,8 +48,10 @@ public class LogoAsset extends BaseEntity {
     private LogoAssetVisibility visibility = LogoAssetVisibility.PRIVATE;
 
     @Builder.Default
+    @Column(name = "view_count", nullable = false)
     private int viewCount = 0;
 
     @Builder.Default
+    @Column(name = "like_count", nullable = false)
     private int likeCount = 0;
 }

@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="배지헌 — 풀스택 개발자 포트폴리오. SLOWIND AI 스포츠 디자인 플랫폼." />
+  <title>배지헌 | Full-Stack · SLOWIND</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --surface: #fff;
+      --ink: #0a0a0a;
+      --muted: #737373;
+      --line: #e5e5e5;
+      --serif: "Cormorant Garamond", "Noto Serif KR", Georgia, serif;
+      --sans: "Noto Sans KR", system-ui, sans-serif;
+      --radius: 16px;
+      --shadow: 0 12px 48px rgba(0,0,0,.12);
+      --slide-pad: clamp(24px, 5vw, 64px);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--ink);
+      color: var(--ink);
+      line-height: 1.6;
+      font-size: 16px;
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── Slide deck ── */
+    .deck {
+      height: 100dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .slide {
+      min-height: 100dvh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: var(--slide-pad);
+      padding-top: calc(var(--slide-pad) + 48px);
+      padding-bottom: calc(var(--slide-pad) + 40px);
+    }
+    .slide-inner {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .slide--dark {
+      background: var(--ink);
+      color: #fafaf9;
+    }
+    .slide--light {
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .slide--accent {
+      background: linear-gradient(165deg, #f5f5f4 0%, #e7e5e4 100%);
+      color: var(--ink);
+    }
+
+    .slide-num {
+      position: absolute;
+      top: var(--slide-pad);
+      left: var(--slide-pad);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      opacity: .35;
+    }
+    .slide--dark .slide-num { color: #fff; }
+
+    .eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .slide--dark .eyebrow { color: #a3a3a3; }
+
+    .slide-title {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+    .slide-lead {
+      margin-top: 20px;
+      font-size: clamp(1rem, 2.2vw, 1.2rem);
+      line-height: 1.7;
+      max-width: 42ch;
+      color: #404040;
+    }
+    .slide--dark .slide-lead { color: #d4d4d4; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .tag {
+      font-size: .72rem; font-weight: 600;
+      padding: 7px 14px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--surface);
+    }
+    .slide--dark .tag {
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.15);
+      color: #e5e5e5;
+    }
+
+    /* Top bar */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px var(--slide-pad);
+      pointer-events: none;
+    }
+    .topbar > * { pointer-events: auto; }
+    .topbar-brand {
+      font-family: var(--serif);
+      font-size: .95rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      color: #fff;
+      mix-blend-mode: difference;
+    }
+    .topbar-hint {
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      color: #fff;
+      mix-blend-mode: difference;
+      opacity: .7;
+    }
+
+    /* Slide nav dots */
+    .slide-nav {
+      position: fixed; right: 20px; top: 50%;
+      transform: translateY(-50%);
+      z-index: 300;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .slide-nav button {
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.4);
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: transform .2s, background .2s, border-color .2s;
+    }
+    .slide-nav button:hover { transform: scale(1.2); border-color: #fff; }
+    .slide-nav button.active {
+      background: #fff;
+      border-color: #fff;
+      transform: scale(1.25);
+    }
+    .slide-nav button[data-theme="light"] {
+      border-color: rgba(10,10,10,.25);
+    }
+    .slide-nav button[data-theme="light"].active,
+    .slide-nav button[data-theme="light"]:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .scroll-cue {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 300;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      font-size: .65rem; font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: #fff;
+      mix-blend-mode: difference;
+      opacity: .6;
+      animation: bounce 2s ease infinite;
+      pointer-events: none;
+      transition: opacity .4s;
+    }
+    .scroll-cue.hidden { opacity: 0; }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+    .scroll-cue svg { opacity: .8; }
+
+    /* Hero */
+    .hero-slide {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(24px, 4vw, 56px);
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .hero-slide h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 9vw, 5.5rem);
+      font-weight: 500;
+      line-height: 1.02;
+    }
+    .hero-slide .hero-sub {
+      margin-top: 20px;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: #a3a3a3;
+      max-width: 38ch;
+      line-height: 1.65;
+    }
+    .hero-gen-wrap {
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
+      box-shadow: 0 24px 80px rgba(0,0,0,.45);
+    }
+    #slide-0 .gen-grid {
+      min-height: min(68vh, 580px);
+      background: rgba(255,255,255,.04);
+      gap: 10px;
+      padding: 10px;
+    }
+    #slide-0 .gen-cell {
+      min-height: min(30vh, 265px);
+      background: #0c0c0c;
+      border-color: rgba(255,255,255,.1);
+    }
+    #slide-0 .gen-cell img {
+      background: #0c0c0c;
+    }
+
+    /* Split layouts */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(28px, 4vw, 48px);
+      align-items: center;
+      width: 100%;
+    }
+    .split--reverse .split-text { order: 2; }
+    .split--reverse .split-media { order: 1; }
+
+    .media-frame {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: #111;
+    }
+    .slide--dark .media-frame { border-color: rgba(255,255,255,.1); }
+    .media-frame img, .media-frame iframe {
+      width: 100%; display: block;
+    }
+    .media-frame img { object-fit: cover; object-position: top; aspect-ratio: 16/10; }
+
+    /* AI 4-grid — 크게 */
+    #slide-4 .split {
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: clamp(20px, 3vw, 40px);
+      align-items: center;
+      max-width: 1280px;
+    }
+    #slide-4 .split-text { max-width: 36ch; }
+    .gen-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      padding: 12px;
+      background: #f5f5f4;
+      min-height: min(72vh, 620px);
+    }
+    .gen-cell {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+      min-height: min(32vh, 280px);
+      box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    }
+    .gen-cell img {
+      width: 100%;
+      height: 100%;
+      min-height: min(32vh, 280px);
+      object-fit: contain;
+      object-position: center top;
+      display: block;
+      background: #fff;
+    }
+    .gen-cell figcaption {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 8px 10px;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      color: #fff;
+      background: linear-gradient(transparent, rgba(0,0,0,.75));
+    }
+    .media-frame--tall img { aspect-ratio: 3/4; max-height: min(52vh, 480px); }
+    .media-frame--video { aspect-ratio: 16/9; position: relative; }
+    .media-frame--video iframe {
+      position: absolute; inset: 0; height: 100%; border: 0;
+    }
+    .video-ph {
+      aspect-ratio: 16/9;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px; color: #737373; font-size: .85rem;
+      background: #171717;
+    }
+
+    /* Feature list */
+    .feat-list { list-style: none; margin-top: 28px; }
+    .feat-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: .95rem;
+      display: flex; gap: 12px;
+      align-items: flex-start;
+    }
+    .slide--dark .feat-list li { border-color: rgba(255,255,255,.1); }
+    .feat-list li:last-child { border-bottom: none; }
+    .feat-list .n {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--muted);
+      min-width: 28px;
+      line-height: 1;
+    }
+    .slide--dark .feat-list .n { color: #525252; }
+    .feat-list strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+    .feat-list span { font-size: .85rem; color: var(--muted); }
+    .slide--dark .feat-list span { color: #a3a3a3; }
+
+    /* Repo cards inline */
+    .repo-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .repo-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .repo-badge {
+      font-size: .65rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      padding: 5px 10px; border-radius: 6px; width: fit-content;
+    }
+    .repo-badge.dev { background: #f5f5f4; border: 1px solid var(--line); }
+    .repo-badge.submit { background: var(--ink); color: #fff; }
+    .repo-card h3 { font-size: 1.05rem; font-weight: 700; }
+    .repo-card p { font-size: .88rem; color: #525252; line-height: 1.65; }
+    .repo-timeline {
+      list-style: none;
+      font-size: .8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    .repo-timeline li {
+      padding: 6px 0 6px 12px;
+      position: relative;
+      border-bottom: 1px dashed var(--line);
+    }
+    .repo-timeline li::before {
+      content: ""; position: absolute; left: 0; top: 12px;
+      width: 4px; height: 4px; border-radius: 999px; background: var(--ink);
+    }
+    .repo-link {
+      margin-top: auto;
+      font-size: .82rem;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* Horizontal screenshot carousel */
+    .carousel-wrap {
+      margin-top: 28px;
+      position: relative;
+    }
+    .carousel-track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding-bottom: 12px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .carousel-track::-webkit-scrollbar { height: 6px; }
+    .carousel-track::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 999px; }
+    .carousel-shot {
+      flex: 0 0 min(320px, 78vw);
+      scroll-snap-align: center;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      cursor: zoom-in;
+      transition: transform .2s;
+    }
+    .carousel-shot:hover { transform: scale(1.02); }
+    .carousel-shot img {
+      width: 100%; aspect-ratio: 16/10;
+      object-fit: cover; object-position: top;
+      display: block;
+    }
+    .carousel-shot figcaption {
+      padding: 12px 14px;
+      font-size: .8rem; font-weight: 600;
+    }
+    .carousel-shot figcaption small {
+      display: block; font-weight: 400;
+      color: var(--muted); font-size: .72rem; margin-top: 2px;
+    }
+    .carousel-btns {
+      display: flex; gap: 8px; margin-top: 16px;
+    }
+    .carousel-btns button {
+      width: 44px; height: 44px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background .15s;
+    }
+    .carousel-btns button:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* Tech pills */
+    .pill-grid {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 32px;
+    }
+    .pill {
+      font-size: .85rem; font-weight: 600;
+      padding: 12px 20px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+
+    /* Contact */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr minmax(380px, 440px);
+      gap: 48px;
+      align-items: start;
+      margin-top: 28px;
+    }
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      box-shadow: var(--shadow);
+      width: 100%;
+    }
+    .contact-row {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      gap: 20px;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: .88rem;
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-row span:first-child {
+      color: var(--muted);
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: .08em;
+      min-width: 52px;
+    }
+    /* Contact slide: card is light — override dark-slide inherited text */
+    #slide-11 .contact-card {
+      color: var(--ink);
+    }
+    #slide-11 .contact-card .contact-row span:first-child {
+      color: var(--muted);
+    }
+    #slide-11 .contact-card .contact-row > :last-child {
+      color: var(--ink);
+      font-weight: 500;
+      text-align: right;
+      white-space: nowrap;
+    }
+    #slide-11 .contact-card .contact-row a {
+      color: var(--ink);
+    }
+    #slide-11 .contact-card .contact-row a:hover {
+      color: #404040;
+    }
+    #slide-11 .contact-footnote {
+      color: #a3a3a3 !important;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn {
+      display: inline-flex; align-items: center;
+      padding: 14px 24px;
+      font-size: .88rem; font-weight: 700;
+      border-radius: 10px;
+      transition: transform .12s;
+    }
+    .btn:hover { text-decoration: none; transform: translateY(-2px); }
+    .btn-primary { background: var(--ink); color: #fff; }
+    .btn-ghost { background: var(--surface); border: 1px solid var(--line); }
+    .slide--dark .btn-ghost {
+      background: transparent;
+      border-color: rgba(255,255,255,.25);
+      color: #fff;
+    }
+
+    /* Centered single-focus slides */
+    .center-focus {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .center-focus .slide-lead { margin-left: auto; margin-right: auto; }
+
+    /* Lightbox */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.92); padding: 24px;
+      align-items: center; justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: min(1100px, 96vw); max-height: 90vh; border-radius: 8px; }
+    .lightbox-close {
+      position: absolute; top: 20px; right: 24px;
+      background: #fff; border: none; width: 44px; height: 44px;
+      border-radius: 999px; font-size: 1.3rem; cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      .hero-slide, .split, .contact-grid, .repo-row { grid-template-columns: 1fr; }
+      #slide-11 .contact-card .contact-row > :last-child { white-space: normal; text-align: left; }
+      #slide-11 .contact-row { grid-template-columns: 100px 1fr; gap: 12px; }
+      .split--reverse .split-text, .split--reverse .split-media { order: unset; }
+      .hero-gen-wrap { order: -1; }
+      #slide-0 .gen-grid { min-height: auto; }
+      #slide-0 .gen-cell, #slide-0 .gen-cell img { min-height: 180px; }
+      #slide-4 .split { grid-template-columns: 1fr; }
+      #slide-4 .split-text { order: 2; }
+      #slide-4 .split-media { order: 1; }
+      .gen-grid { min-height: auto; gap: 10px; padding: 10px; }
+      .gen-cell, .gen-cell img { min-height: 200px; }
+      .slide-nav { right: 10px; gap: 8px; }
+      .slide-nav button { width: 8px; height: 8px; }
+      .topbar-hint { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .deck { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<script>
+  const PORTFOLIO_CONFIG = {
+    youtubeVideoId: "5EhA5BT7up8",
+    githubMain: "https://github.com/dudi199784-hash/slowind-fullstack",
+    githubProfile: "https://github.com/dudi199784-hash",
+    githubDevLog: "https://github.com/dudi199784-hash/chunchunhee_slowind_2026",
+  };
+</script>
+
+<div class="topbar">
+  <a href="#slide-0" class="topbar-brand" data-goto="0">BAE JIHEON</a>
+  <span class="topbar-hint">↓ 스크롤 · 키보드 ↑↓</span>
+</div>
+
+<nav class="slide-nav" id="slide-nav" aria-label="슬라이드 이동"></nav>
+<div class="scroll-cue" id="scroll-cue" aria-hidden="true">
+  <span>SCROLL</span>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+</div>
+
+<main class="deck" id="deck">
+
+  <!-- 0 Hero -->
+  <section class="slide slide--dark" id="slide-0" data-theme="dark">
+    <span class="slide-num">01</span>
+    <div class="hero-slide">
+      <div>
+        <p class="eyebrow">Full-Stack Developer</p>
+        <h1>AI × 커머스<br /><em style="font-style:italic">SLOWIND</em></h1>
+        <p class="hero-sub">
+          스포츠 팀 맞춤 로고·유니폼·용품 AI 시안부터
+          저장·공유·주문까지. Next.js + Spring Boot 풀스택 서비스.
+        </p>
+        <div class="tags">
+          <span class="tag">Next.js 16</span>
+          <span class="tag">Spring Boot 3</span>
+          <span class="tag">OpenAI API</span>
+          <span class="tag">JWT</span>
+        </div>
+      </div>
+      <div class="hero-gen-wrap">
+        <div class="gen-grid">
+          <figure class="gen-cell">
+            <img src="assets/gen-uniform.gif?v=0520" alt="유니폼 AI 시안 생성" />
+            <figcaption>유니폼</figcaption>
+          </figure>
+          <figure class="gen-cell">
+            <img src="assets/gen-cleats.gif?v=0520" alt="축구화 AI 시안 생성" />
+            <figcaption>축구화</figcaption>
+          </figure>
+          <figure class="gen-cell">
+            <img src="assets/gen-keeper.gif?v=0520" alt="키퍼 글러브 AI 시안 생성" />
+            <figcaption>키퍼 글러브</figcaption>
+          </figure>
+          <figure class="gen-cell">
+            <img src="assets/gen-sports.gif?v=0520" alt="스포츠 용품 AI 시안 생성" />
+            <figcaption>스포츠 용품</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 About -->
+  <section class="slide slide--light" id="slide-1" data-theme="light">
+    <span class="slide-num">02</span>
+    <div class="slide-inner split">
+      <div class="split-text">
+        <p class="eyebrow">About</p>
+        <h2 class="slide-title">배지헌</h2>
+        <p class="slide-lead">
+          Java 기반 풀스택 개발자입니다.
+          API 설계 · JWT 인증 · JPA · AI API 연동 · 프론트 UX까지
+          End-to-End로 구현하는 것에 집중합니다.
+        </p>
+        <p class="slide-lead" style="margin-top:12px;font-size:.95rem">
+          Java 6개월 과정 수료(2025.07 – 2026.01) 후,
+          <strong>SLOWIND 입사 지원</strong>을 위해 본 프로젝트를 기획·개발했습니다.
+          프론트·백엔드 전 영역을 담당했습니다.
+        </p>
+      </div>
+      <figure class="split-media media-frame media-frame--tall">
+        <img src="assets/01-hero.png?v=0521" alt="SLOWIND Tailored Series 메인 히어로" />
+      </figure>
+    </div>
+  </section>
+
+  <!-- 2 Project -->
+  <section class="slide slide--accent" id="slide-2" data-theme="light">
+    <span class="slide-num">03</span>
+    <div class="slide-inner center-focus">
+      <p class="eyebrow">Project</p>
+      <h2 class="slide-title">무엇을 만들었나</h2>
+      <p class="slide-lead">
+        팀·동아리·아마추어 스포츠를 위한 <strong>맞춤 유니폼·로고·스포츠 용품 AI 시안</strong> 제작 플랫폼.
+        생성 → 저장 → 구경하기(공개) → 장바구니 → 주문까지 한 흐름으로 연결합니다.
+      </p>
+      <ul class="feat-list" style="max-width:520px;margin-left:auto;margin-right:auto;text-align:left">
+        <li><span class="n">01</span><div><strong>AI 디자인 스튜디오</strong><span>로고 · 유니폼 · 축구화 · 키퍼 글러브 · 용품</span></div></li>
+        <li><span class="n">02</span><div><strong>구경하기 · 커뮤니티</strong><span>조회수 · 좋아요 · 인기·홈 쇼케이스</span></div></li>
+        <li><span class="n">03</span><div><strong>커머스</strong><span>장바구니 · 주문 · 배송지 · 주문 내역</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3 Demo video -->
+  <section class="slide slide--dark" id="slide-3" data-theme="dark">
+    <span class="slide-num">04</span>
+    <div class="slide-inner">
+      <p class="eyebrow">Demo</p>
+      <h2 class="slide-title">시연 영상</h2>
+      <p class="slide-lead" style="color:#a3a3a3;margin-bottom:24px">실제 서비스 흐름을 영상으로 확인할 수 있습니다.</p>
+      <div class="media-frame media-frame--video" id="video-container">
+        <div class="video-ph" id="video-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>PORTFOLIO_CONFIG.youtubeVideoId 설정</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 AI -->
+  <section class="slide slide--light" id="slide-4" data-theme="light">
+    <span class="slide-num">05</span>
+    <div class="slide-inner split">
+      <div class="split-media media-frame" style="padding:0;background:#f5f5f4">
+        <div class="gen-grid">
+          <figure class="gen-cell">
+            <img src="assets/gen-uniform.gif?v=0520" alt="유니폼 AI 시안 생성 중" />
+            <figcaption>유니폼</figcaption>
+          </figure>
+          <figure class="gen-cell">
+            <img src="assets/gen-cleats.gif?v=0520" alt="축구화 AI 시안 생성 중" />
+            <figcaption>축구화</figcaption>
+          </figure>
+          <figure class="gen-cell">
+            <img src="assets/gen-keeper.gif?v=0520" alt="키퍼 글러브 AI 시안 생성 중" />
+            <figcaption>키퍼 글러브</figcaption>
+          </figure>
+          <figure class="gen-cell">
+            <img src="assets/gen-sports.gif?v=0520" alt="스포츠 용품 AI 시안 생성 중" />
+            <figcaption>스포츠 용품</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="split-text">
+        <p class="eyebrow">Core Feature</p>
+        <h2 class="slide-title">AI 시안<br />자동 생성</h2>
+        <p class="slide-lead">
+          팀명·레퍼런스 입력 → Spring Boot가 OpenAI Images API 호출 →
+          Next.js가 <strong>진행률·예상 시간</strong> UI로 결과를 표시합니다.
+        </p>
+        <ul class="feat-list">
+          <li><span class="n">·</span><div><strong>유니폼 · 축구화 · 글러브 · 용품</strong><span>4종 상품 시안 파이프라인</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 Studio -->
+  <section class="slide slide--light" id="slide-5" data-theme="light">
+    <span class="slide-num">06</span>
+    <div class="slide-inner split split--reverse">
+      <div class="split-text">
+        <p class="eyebrow">Screen</p>
+        <h2 class="slide-title">디자인<br />스튜디오</h2>
+        <p class="slide-lead">로고 생성부터 유니폼·상품 시안까지, 커스텀 제작 플로우 한 화면에서 이어집니다.</p>
+      </div>
+      <figure class="split-media media-frame carousel-shot" data-src="assets/04-logo-generation.png?v=0521" tabindex="0">
+        <img src="assets/04-logo-generation.png?v=0521" alt="로고 생성 스튜디오" />
+      </figure>
+    </div>
+  </section>
+
+  <!-- 6 Product -->
+  <section class="slide slide--accent" id="slide-6" data-theme="light">
+    <span class="slide-num">07</span>
+    <div class="slide-inner split">
+      <figure class="split-media media-frame carousel-shot" data-src="assets/06-uniform.png?v=0521">
+        <img src="assets/06-uniform.png?v=0521" alt="디자인 스튜디오 · 유니폼 시안" />
+      </figure>
+      <div class="split-text">
+        <p class="eyebrow">Screen</p>
+        <h2 class="slide-title">상품 시안</h2>
+        <p class="slide-lead">레퍼런스 팀 스타일을 반영한 유니폼·축구화·글러브·축구공 시안 결과 화면.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 My designs -->
+  <section class="slide slide--light" id="slide-7" data-theme="light">
+    <span class="slide-num">08</span>
+    <div class="slide-inner split split--reverse">
+      <div class="split-text">
+        <p class="eyebrow">Screen</p>
+        <h2 class="slide-title">내 디자인 ·<br />구경하기</h2>
+        <p class="slide-lead">저장 · 공개 설정 · 쇼핑백. 공개 디자인은 조회수·좋아요와 함께 커뮤니티에 노출됩니다.</p>
+      </div>
+      <figure class="split-media media-frame carousel-shot" data-src="assets/10-my-designs-2.png?v=0521">
+        <img src="assets/10-my-designs-2.png?v=0521" alt="내 디자인 · PowerRabbits 시안" />
+      </figure>
+    </div>
+  </section>
+
+  <!-- 8 Gallery carousel -->
+  <section class="slide slide--dark" id="slide-8" data-theme="dark">
+    <span class="slide-num">09</span>
+    <div class="slide-inner" style="width:100%;max-width:1200px">
+      <p class="eyebrow">Screenshots</p>
+      <h2 class="slide-title">화면 모음</h2>
+      <p class="slide-lead" style="color:#a3a3a3">가로로 넘기거나 클릭해 크게 볼 수 있습니다.</p>
+      <div class="carousel-wrap">
+        <div class="carousel-track" id="shot-carousel">
+          <figure class="carousel-shot" data-src="assets/01-hero.png?v=0521"><img src="assets/01-hero.png?v=0521" alt="" loading="lazy" /><figcaption>메인 히어로<small>Tailored Series</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/02-home-products.png?v=0521"><img src="assets/02-home-products.png?v=0521" alt="" loading="lazy" /><figcaption>홈 · 상품<small>카테고리 그리드</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/03-custom-studio.png?v=0521"><img src="assets/03-custom-studio.png?v=0521" alt="" loading="lazy" /><figcaption>커스텀 제작<small>로고 · 유니폼</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/gen-uniform.png"><img src="assets/gen-uniform.png" alt="" loading="lazy" /><figcaption>유니폼 생성 중<small>진행률 UI</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/05-cleats.png?v=0521"><img src="assets/05-cleats.png?v=0521" alt="" loading="lazy" /><figcaption>축구화 시안<small>디자인 스튜디오</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/06-uniform-studio.png?v=0521"><img src="assets/06-uniform-studio.png?v=0521" alt="" loading="lazy" /><figcaption>유니폼 시안<small>디자인 스튜디오</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/07-keeper-studio.png?v=0521"><img src="assets/07-keeper-studio.png?v=0521" alt="" loading="lazy" /><figcaption>키퍼 글러브<small>디자인 스튜디오</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/08-sports-ball.png?v=0521"><img src="assets/08-sports-ball.png?v=0521" alt="" loading="lazy" /><figcaption>스포츠 용품<small>디자인 스튜디오</small></figcaption></figure>
+          <figure class="carousel-shot" data-src="assets/11-product-intro.png?v=0521"><img src="assets/11-product-intro.png?v=0521" alt="" loading="lazy" /><figcaption>상품 소개<small>4종 카테고리</small></figcaption></figure>
+        </div>
+        <div class="carousel-btns">
+          <button type="button" id="carousel-prev" aria-label="이전">←</button>
+          <button type="button" id="carousel-next" aria-label="다음">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 GitHub -->
+  <section class="slide slide--light" id="slide-9" data-theme="light">
+    <span class="slide-num">10</span>
+    <div class="slide-inner">
+      <p class="eyebrow">GitHub</p>
+      <h2 class="slide-title">두 가지 저장소</h2>
+      <p class="slide-lead">개발 과정 기록과, 제출·배포용 완성형을 분리해 관리했습니다.</p>
+      <div class="repo-row">
+        <article class="repo-card">
+          <span class="repo-badge dev">개발 과정</span>
+          <h3>chunchunhee_slowind_2026</h3>
+          <p>백엔드 API 설계 → UI 골격 프론트 → API 연동 → 최종 디자인 적용까지 <strong>완성 전 전 과정</strong>과 버전 이력.</p>
+          <ul class="repo-timeline">
+            <li>REST API · 도메인 설계</li>
+            <li>기능 없는 UI 골격</li>
+            <li>프론트 ↔ 백 연동</li>
+            <li>최종 UX · 디자인</li>
+          </ul>
+          <a class="repo-link" id="repo-link-dev" href="#" target="_blank" rel="noopener">저장소 열기 →</a>
+        </article>
+        <article class="repo-card">
+          <span class="repo-badge submit">포트폴리오 제출용</span>
+          <h3>slowind-fullstack</h3>
+          <p>구조 정리 · 런 테스트 완료 · <code>frontend</code> / <code>backend</code> 모노레포로 마무리한 <strong>최종 완성형</strong>.</p>
+          <a class="repo-link" id="repo-link-main" href="#" target="_blank" rel="noopener" style="margin-top:24px">저장소 열기 →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 Tech -->
+  <section class="slide slide--accent" id="slide-10" data-theme="light">
+    <span class="slide-num">11</span>
+    <div class="slide-inner center-focus">
+      <p class="eyebrow">Tech Stack</p>
+      <h2 class="slide-title">기술 스택</h2>
+      <div class="pill-grid" style="justify-content:center">
+        <span class="pill">Next.js 16</span>
+        <span class="pill">React 19</span>
+        <span class="pill">TypeScript</span>
+        <span class="pill">Tailwind CSS 4</span>
+        <span class="pill">Java 17</span>
+        <span class="pill">Spring Boot 3</span>
+        <span class="pill">Spring Security · JWT</span>
+        <span class="pill">JPA · H2</span>
+        <span class="pill">OpenAI Images API</span>
+        <span class="pill">Swagger</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 Contact -->
+  <section class="slide slide--dark" id="slide-11" data-theme="dark">
+    <span class="slide-num">12</span>
+    <div class="slide-inner contact-grid" style="margin-top:0">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2 class="slide-title">연락하기</h2>
+        <p class="slide-lead" style="color:#d4d4d4">프로젝트·채용 관련 문의 환영합니다.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" id="btn-github-bottom" href="#" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="btn btn-ghost" href="mailto:baejh1997@gmail.com">이메일</a>
+        </div>
+        <p class="contact-footnote" style="margin-top:48px;font-size:.75rem">© 2026 Bae Jiheon · SLOWIND Portfolio</p>
+      </div>
+      <aside class="contact-card">
+        <div class="contact-row"><span>Email</span><a href="mailto:baejh1997@gmail.com">baejh1997@gmail.com</a></div>
+        <div class="contact-row"><span>Phone</span><span>010-9795-9236</span></div>
+        <div class="contact-row"><span>GitHub</span><a href="https://github.com/dudi199784-hash" target="_blank" rel="noopener">@dudi199784-hash</a></div>
+        <div class="contact-row"><span>프로젝트 제작기간</span><span>2026.04.23 – 2026.05.20</span></div>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-label="이미지 확대">
+  <button class="lightbox-close" type="button" aria-label="닫기">×</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<script>
+(function () {
+  const cfg = PORTFOLIO_CONFIG;
+  const deck = document.getElementById("deck");
+  const slides = Array.from(deck.querySelectorAll(".slide"));
+  const nav = document.getElementById("slide-nav");
+  const scrollCue = document.getElementById("scroll-cue");
+
+  document.getElementById("repo-link-main").href = cfg.githubMain;
+  document.getElementById("repo-link-dev").href = cfg.githubDevLog;
+  document.getElementById("btn-github-bottom").href = cfg.githubProfile;
+
+  const videoId = (cfg.youtubeVideoId || "").trim();
+  const videoContainer = document.getElementById("video-container");
+  const videoPh = document.getElementById("video-placeholder");
+  if (videoId) {
+    videoPh.remove();
+    const iframe = document.createElement("iframe");
+    iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(videoId);
+    iframe.title = "SLOWIND 시연 영상";
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen = true;
+    videoContainer.appendChild(iframe);
+  }
+
+  slides.forEach(function (slide, i) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("aria-label", "슬라이드 " + (i + 1));
+    btn.dataset.index = String(i);
+    btn.dataset.theme = slide.dataset.theme || "dark";
+    if (i === 0) btn.classList.add("active");
+    btn.addEventListener("click", function () {
+      slides[i].scrollIntoView({ behavior: "smooth" });
+    });
+    nav.appendChild(btn);
+  });
+
+  const navBtns = nav.querySelectorAll("button");
+  let activeIndex = 0;
+  let wheelLock = false;
+
+  const observer = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+          const idx = slides.indexOf(entry.target);
+          if (idx >= 0) setActive(idx);
+        }
+      });
+    },
+    { root: deck, threshold: [0.55, 0.7] }
+  );
+  slides.forEach(function (s) { observer.observe(s); });
+
+  function setActive(idx) {
+    activeIndex = idx;
+    navBtns.forEach(function (b, i) {
+      b.classList.toggle("active", i === idx);
+      b.dataset.theme = slides[i].dataset.theme || "dark";
+    });
+    scrollCue.classList.toggle("hidden", idx >= slides.length - 1);
+  }
+
+  document.querySelectorAll("[data-goto]").forEach(function (el) {
+    el.addEventListener("click", function (e) {
+      e.preventDefault();
+      const i = parseInt(el.dataset.goto, 10);
+      if (!isNaN(i)) slides[i].scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (document.getElementById("lightbox").classList.contains("open")) return;
+    if (e.key === "ArrowDown" || e.key === "PageDown") {
+      e.preventDefault();
+      if (activeIndex < slides.length - 1) slides[activeIndex + 1].scrollIntoView({ behavior: "smooth" });
+    } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+      e.preventDefault();
+      if (activeIndex > 0) slides[activeIndex - 1].scrollIntoView({ behavior: "smooth" });
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      slides[0].scrollIntoView({ behavior: "smooth" });
+    } else if (e.key === "End") {
+      e.preventDefault();
+      slides[slides.length - 1].scrollIntoView({ behavior: "smooth" });
+    }
+  });
+
+  deck.addEventListener("wheel", function (e) {
+    if (Math.abs(e.deltaY) < 40 || wheelLock) return;
+    const lb = document.getElementById("lightbox");
+    if (lb.classList.contains("open")) return;
+    const track = document.getElementById("shot-carousel");
+    if (track && track.matches(":hover")) return;
+
+    wheelLock = true;
+    setTimeout(function () { wheelLock = false; }, 700);
+  }, { passive: true });
+
+  const carousel = document.getElementById("shot-carousel");
+  const prevBtn = document.getElementById("carousel-prev");
+  const nextBtn = document.getElementById("carousel-next");
+  if (carousel && prevBtn && nextBtn) {
+    const step = function (dir) {
+      const card = carousel.querySelector(".carousel-shot");
+      const w = card ? card.offsetWidth + 16 : 320;
+      carousel.scrollBy({ left: dir * w, behavior: "smooth" });
+    };
+    prevBtn.addEventListener("click", function () { step(-1); });
+    nextBtn.addEventListener("click", function () { step(1); });
+  }
+
+  const lb = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lightbox-img");
+  document.querySelectorAll(".carousel-shot").forEach(function (shot) {
+    shot.addEventListener("click", function () {
+      lbImg.src = shot.dataset.src || shot.querySelector("img").src;
+      lbImg.alt = shot.querySelector("img").alt || "";
+      lb.classList.add("open");
+    });
+  });
+  lb.querySelector(".lightbox-close").addEventListener("click", function () { lb.classList.remove("open"); });
+  lb.addEventListener("click", function (e) { if (e.target === lb) lb.classList.remove("open"); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") lb.classList.remove("open");
+  });
+
+})();
+</script>
+
+</body>
+</html>

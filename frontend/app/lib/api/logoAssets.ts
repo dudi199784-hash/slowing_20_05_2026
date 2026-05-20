@@ -106,22 +106,49 @@ export async function fetchBrowseLogoAssets(
   return data ?? [];
 }
 
+/** 목록·홈 쇼케이스 클릭 시 조회수 중복 방지 (상세와 공유) */
+export function browseViewCountSessionKey(assetId: number): string {
+  return `browse-view-counted-${assetId}`;
+}
+
+/** 구경하기 조회수 +1 (목록 클릭 등) */
+export async function recordBrowseView(assetId: number): Promise<void> {
+  try {
+    await fetchBrowseLogoAsset(assetId, { countView: true });
+  } catch {
+    /* 목록 UX는 네비게이션 우선 — 실패해도 막지 않음 */
+  }
+}
+
+export function markBrowseViewCounted(assetId: number): void {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(browseViewCountSessionKey(assetId), "1");
+}
+
+export function handleBrowseCardClick(assetId: number): void {
+  markBrowseViewCounted(assetId);
+  void recordBrowseView(assetId);
+}
+
 /** 상세 관람 — `countView` 가 true 일 때만 조회수 +1 */
 export async function fetchBrowseLogoAsset(
   id: number,
-  options?: { countView?: boolean },
+  options?: { countView?: boolean; signal?: AbortSignal },
 ): Promise<LogoAssetItem> {
   const countView = options?.countView !== false;
   const q = countView ? "" : "?countView=false";
+  const requestConfig = options?.signal ? { signal: options.signal } : undefined;
   const token = getAccessToken();
   if (token) {
     const res = await http.get<LogoAssetItem>(
       `/api/v1/logo-assets/browse/${id}${q}`,
+      requestConfig,
     );
     return res.data;
   }
   const data = await fetchApiJson<LogoAssetItem>(
     `/api/v1/logo-assets/browse/${id}${q}`,
+    requestConfig,
   );
   if (!data) {
     throw new Error("디자인을 찾을 수 없습니다.");
@@ -155,7 +182,18 @@ export async function fetchLogoAssetAsFile(
 }
 
 export function titleFromLogoPrompt(prompt: string): string {
+  const teamMatch = prompt.match(/팀 이름은 "([^"]+)"/);
+  if (teamMatch?.[1]?.trim()) {
+    return `${teamMatch[1].trim()} 로고`;
+  }
   const line = prompt.trim().split("\n")[0] ?? "디자인";
+  if (
+    line.includes("간지나는") ||
+    line.includes("축구팀 로고") ||
+    line.includes("flat vector emblem")
+  ) {
+    return "팀 로고";
+  }
   return line.length > 80 ? `${line.slice(0, 79)}…` : line;
 }
 

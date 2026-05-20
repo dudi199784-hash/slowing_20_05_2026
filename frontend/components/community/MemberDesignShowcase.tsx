@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { formatApiError } from "@/app/lib/api/formatApiError";
 import type { MemberDesignPreview } from "@/config/memberDesignPreview";
+import { handleBrowseCardClick } from "@/app/lib/api/logoAssets";
 import { fetchShowcaseDesigns } from "@/lib/api/designs";
 import {
   boardCardHoverShell,
@@ -152,6 +153,7 @@ export default function MemberDesignShowcase({
             <li key={`${item.assetId}-${item.id}`} className={boardCardListItem}>
               <Link
                 href={item.browseHref}
+                onClick={() => handleBrowseCardClick(item.assetId)}
                 className={`${boardCardHoverShell} block h-full`}
               >
                 <article className="flex h-full flex-col overflow-hidden border border-neutral-200 bg-white transition-colors duration-500 ease-in-out hover:border-neutral-300">

@@ -7,6 +7,7 @@ import { formatApiError } from "@/app/lib/api/formatApiError";
 import {
   fetchBrowseLogoAssets,
   formatMetricCount,
+  handleBrowseCardClick,
   logoAssetImageUrl,
   titleFromLogoPrompt,
   type LogoAssetItem,
@@ -76,6 +77,7 @@ export default function BrowseClient() {
             <li key={item.id}>
               <Link
                 href={`/shop/browse/${item.id}`}
+                onClick={() => handleBrowseCardClick(item.id)}
                 className="flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition hover:border-neutral-400 hover:shadow-sm"
               >
                 <div className="aspect-[4/3] bg-neutral-100 p-3">

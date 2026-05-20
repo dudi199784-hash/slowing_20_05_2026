@@ -1,6 +1,13 @@
 # SLOWIND
 
-맞춤 유니폼·로고·스포츠 용품 AI 시안 제작 서비스 (제출·배포용 레포지토리)
+맞춤 유니폼·로고·스포츠 용품 AI 시안 제작 서비스
+
+## GitHub 저장소
+
+| 구분 | 저장소 | 설명 |
+|------|--------|------|
+| **포트폴리오 제출용** (이 레포) | [slowind-fullstack](https://github.com/dudi199784-hash/slowind-fullstack) | 완성된 서비스 구조를 정리하고 런 테스트를 거친 **최종 제출·배포용** 저장소 (`frontend` + `backend` 모노레포) |
+| **개발 과정** | [chunchunhee_slowind_2026](https://github.com/dudi199784-hash/chunchunhee_slowind_2026) | 백엔드 API 설계 → UI 골격 프론트 → API 연동 → 최종 디자인 적용까지, **완성 전 과정**과 `frontend_ver2`·`ver3` 등 버전 이력이 담긴 저장소 |
 
 ## 구조
 
@@ -8,9 +15,6 @@
 |------|------|
 | `backend/` | Spring Boot API (기본 포트 `8090`) |
 | `frontend/` | Next.js 앱 (기본 포트 `3000`) |
-
-개발 과정·이전 프론트 버전(`frontend_ver2` 등)은 포트폴리오용 레포에서 확인할 수 있습니다.  
-→ [chunchunhee_slowind_2026](https://github.com/dudi199784-hash/chunchunhee_slowind_2026)
 
 ## 로컬 실행
 

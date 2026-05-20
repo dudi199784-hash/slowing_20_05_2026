@@ -33,7 +33,9 @@ import {
 } from "@/config/customMakerStudio";
 import {
   buildLogoGenerationPrompt,
-  LOGO_GENERATION_PROMPT_HINT,
+  logoGenerationCompletedMessage,
+  logoGenerationCreatingMessage,
+  logoGenerationIdleMessage,
 } from "@/config/logoGeneration";
 import {
   buildProductDraftPrompt,
@@ -347,6 +349,7 @@ export default function CustomMakerInteractive({
     previewSrc: string;
     b64Png: string | null;
     promptSummary: string;
+    generationPrompt?: string;
   }) {
     const id = createGeneratedPreviewId();
     const category = saveCategoryForWorkspace();
@@ -367,6 +370,7 @@ export default function CustomMakerInteractive({
       category,
       title,
       promptSummary: params.promptSummary,
+      generationPrompt: params.generationPrompt,
       previewSrc: params.previewSrc,
       b64Png: params.b64Png,
       createdAt: Date.now(),
@@ -534,10 +538,21 @@ export default function CustomMakerInteractive({
           setError("팀 이름을 입력해 주세요.");
           return;
         }
-        promptSummary = buildLogoGenerationPrompt(teamName);
+        const generationPrompt = buildLogoGenerationPrompt(teamName);
+        promptSummary = logoGenerationCompletedMessage(teamName);
         data = await generateOpenAiImage({
-          prompt: promptSummary,
+          prompt: generationPrompt,
         });
+        const { nextPreviewSrc, nextB64 } = applyGeneratedImage(data);
+        if (nextPreviewSrc) {
+          storePreviewSession({
+            previewSrc: nextPreviewSrc,
+            b64Png: nextB64,
+            promptSummary,
+            generationPrompt,
+          });
+        }
+        return;
       }
 
       const { nextPreviewSrc, nextB64 } = applyGeneratedImage(data);
@@ -913,11 +928,9 @@ export default function CustomMakerInteractive({
               {workspace === "logo" ? (
                 <>
                   <p className="rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 text-xs leading-relaxed text-neutral-600">
-                    {LOGO_GENERATION_PROMPT_HINT}
-                    <br />
-                    <span className="text-neutral-500">
-                      고정 스타일: 선만 · 검은 아웃라인 · 흰 배경 · 축구팀 엠블럼
-                    </span>
+                    {loading
+                      ? logoGenerationCreatingMessage(teamName)
+                      : logoGenerationIdleMessage()}
                   </p>
                   <div>
                     <label

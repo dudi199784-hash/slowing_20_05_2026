@@ -6,7 +6,10 @@ export type GeneratedPreviewRecord = {
   kind: GeneratedPreviewKind;
   category: string;
   title: string;
+  /** 화면 설명란용 (로고는 사용자 친화 문구) */
   promptSummary: string;
+  /** 로고 API·저장용 내부 프롬프트 (화면 미노출) */
+  generationPrompt?: string;
   previewSrc: string;
   b64Png: string | null;
   createdAt: number;

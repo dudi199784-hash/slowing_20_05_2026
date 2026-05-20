@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { formatApiError } from "@/app/lib/api/formatApiError";
 import { http } from "@/app/lib/api/http";
 import { saveLogoAsset } from "@/app/lib/api/logoAssets";
+import { logoGenerationDisplayMessage } from "@/config/logoGeneration";
 import { normalizeDesignCategory } from "@/lib/designCategories";
 import {
   loadGeneratedPreviewAsync,
@@ -54,7 +55,7 @@ export default function DesignPreviewClient() {
     setSaving(true);
     try {
       const { id, accessPath } = await saveLogoAsset({
-        prompt: record.promptSummary,
+        prompt: record.generationPrompt ?? record.promptSummary,
         b64Png: record.b64Png,
         category: normalizeDesignCategory(record.category),
       });
@@ -84,6 +85,11 @@ export default function DesignPreviewClient() {
     : null;
 
   const isSaved = Boolean(record?.savedAssetId);
+
+  const descriptionText =
+    record?.kind === "logo"
+      ? logoGenerationDisplayMessage(record.promptSummary)
+      : record?.promptSummary ?? "";
 
   if (loading) {
     return (
@@ -132,7 +138,7 @@ export default function DesignPreviewClient() {
         <p className="whitespace-pre-wrap break-words">
           <span className="font-medium text-neutral-800">설명</span>
           <br />
-          {record.promptSummary}
+          {descriptionText}
         </p>
         {isSaved && record.savedAssetId ? (
           <p className="text-xs text-green-700">

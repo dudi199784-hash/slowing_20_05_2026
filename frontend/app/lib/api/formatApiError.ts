@@ -1,6 +1,18 @@
 const OPENAI_BILLING_HINT =
   "OpenAI 계정의 결제 한도에 도달했습니다. platform.openai.com → Settings → Billing에서 결제 수단·한도·크레딧을 확인한 뒤 다시 시도해 주세요.";
 
+const OPENAI_TRANSIENT_HINT =
+  "OpenAI 서버에 일시적으로 연결하지 못했습니다. 10~30초 후 다시 시도해 주세요.";
+
+function isOpenAiTransientMessage(text: string): boolean {
+  const t = text.toLowerCase();
+  return (
+    t.includes("520") ||
+    t.includes("일시적으로 연결") ||
+    t.includes("일시적으로 응답하지 않")
+  );
+}
+
 function isOpenAiBillingLimitMessage(text: string): boolean {
   const t = text.toLowerCase();
   return (
@@ -16,7 +28,9 @@ function isOpenAiBillingLimitMessage(text: string): boolean {
 export function formatApiError(err: unknown, fallback = "요청 실패"): string {
   if (!err || typeof err !== "object" || !("response" in err)) {
     const msg = err instanceof Error ? err.message : fallback;
-    return isOpenAiBillingLimitMessage(msg) ? OPENAI_BILLING_HINT : msg;
+    if (isOpenAiBillingLimitMessage(msg)) return OPENAI_BILLING_HINT;
+    if (isOpenAiTransientMessage(msg)) return OPENAI_TRANSIENT_HINT;
+    return msg;
   }
   const data = (err as { response?: { data?: unknown; status?: number } })
     .response?.data;
@@ -26,10 +40,9 @@ export function formatApiError(err: unknown, fallback = "요청 실패"): string
     const obj = data as Record<string, unknown>;
     const detail = obj.detail ?? obj.message;
     if (typeof detail === "string" && detail.trim()) {
-      if (isOpenAiBillingLimitMessage(detail)) {
-        return OPENAI_BILLING_HINT;
-      }
-      return status ? `[${status}] ${detail}` : detail;
+      if (isOpenAiBillingLimitMessage(detail)) return OPENAI_BILLING_HINT;
+      if (isOpenAiTransientMessage(detail)) return OPENAI_TRANSIENT_HINT;
+      return status === 502 || status === 503 ? OPENAI_TRANSIENT_HINT : detail;
     }
     try {
       return JSON.stringify(data, null, 2);

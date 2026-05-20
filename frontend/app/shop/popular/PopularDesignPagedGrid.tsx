@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { handleBrowseCardClick } from "@/app/lib/api/logoAssets";
 import type { MemberDesignPreview } from "@/config/memberDesignPreview";
 import MemberDesignMetricsRow from "@/components/community/MemberDesignMetricsRow";
 import AddToCartConfirmDialog from "@/components/shop/AddToCartConfirmDialog";
@@ -33,45 +34,51 @@ function DesignCard({
   return (
     <div className={boardCardHoverShell}>
       <article className="flex h-full flex-col overflow-hidden border border-neutral-200 bg-white transition-colors duration-500 ease-in-out hover:border-neutral-300">
-        <div className="aspect-[4/3] w-full bg-neutral-100 p-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={item.imageUrl}
-            alt={item.title}
-            className="h-full w-full object-contain"
-          />
-        </div>
-        <div className="flex flex-1 flex-col gap-1 p-4">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-            {item.category}
-          </span>
-          <h3 className="text-sm font-semibold text-neutral-900 md:text-base">
-            {item.title}
-          </h3>
-          <p className="text-xs text-neutral-500">{item.author}</p>
-          <MemberDesignMetricsRow
-            viewsDisplay={item.viewsDisplay}
-            likesDisplay={item.likesDisplay}
-          />
-          <div className="mt-3 flex gap-2">
-            {showCart ? (
-              <button
-                type="button"
-                onClick={() => onAddToCart(item)}
-                className="flex-1 rounded-md border border-neutral-300 bg-white px-2 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50 sm:text-sm"
-              >
-                쇼핑백
-              </button>
-            ) : null}
-            <Link
-              href={customHref}
-              className={`rounded-md border border-neutral-900 bg-neutral-900 px-2 py-2 text-center text-xs font-medium text-white transition hover:bg-neutral-800 sm:text-sm ${
-                showCart ? "flex-1" : "w-full"
-              }`}
-            >
-              래퍼런스
-            </Link>
+        <Link
+          href={item.browseHref}
+          onClick={() => handleBrowseCardClick(item.assetId)}
+          className="block flex flex-1 flex-col"
+        >
+          <div className="aspect-[4/3] w-full bg-neutral-100 p-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              className="h-full w-full object-contain"
+            />
           </div>
+          <div className="flex flex-1 flex-col gap-1 p-4">
+            <span className="text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+              {item.category}
+            </span>
+            <h3 className="text-sm font-semibold text-neutral-900 md:text-base">
+              {item.title}
+            </h3>
+            <p className="text-xs text-neutral-500">{item.author}</p>
+            <MemberDesignMetricsRow
+              viewsDisplay={item.viewsDisplay}
+              likesDisplay={item.likesDisplay}
+            />
+          </div>
+        </Link>
+        <div className="mt-3 flex gap-2 px-4 pb-4">
+          {showCart ? (
+            <button
+              type="button"
+              onClick={() => onAddToCart(item)}
+              className="flex-1 rounded-md border border-neutral-300 bg-white px-2 py-2 text-xs font-medium text-neutral-800 transition hover:bg-neutral-50 sm:text-sm"
+            >
+              쇼핑백
+            </button>
+          ) : null}
+          <Link
+            href={customHref}
+            className={`rounded-md border border-neutral-900 bg-neutral-900 px-2 py-2 text-center text-xs font-medium text-white transition hover:bg-neutral-800 sm:text-sm ${
+              showCart ? "flex-1" : "w-full"
+            }`}
+          >
+            래퍼런스
+          </Link>
         </div>
       </article>
     </div>
